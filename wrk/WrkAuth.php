@@ -15,7 +15,7 @@ class WrkAuth {
     private WrkDatabase $wrkDB;
 
     public function __construct() {
-        $this->wrkDB = new WrkDatabase();
+        $this->wrkDB = WrkDatabase::getInstance();
     }
 
     public function login(array $requestBody): void {
@@ -49,7 +49,7 @@ class WrkAuth {
             ]
         ];
         $token = JWT::encode($payload, $_ENV["JWT_SECRET"], $_ENV["JWT_ALG"]);
-        $data = array('username' => $existingAdmin['username'], 'token' => $token, 'expiresAt' => $payload['exp']);
+        $data = array('username' => $existingAdmin['username'], 'token' => $token, 'expiresAt' => $payload['exp'], 'permission' => $existingAdmin['permission']);
         HTTPResponses::success("Connexion réussie", $data);
     }
 

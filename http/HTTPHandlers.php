@@ -169,7 +169,7 @@ class HTTPHandlers {
 
     private function checkRequestBody(): ?array {
         $requestBody = json_decode(file_get_contents("php://input"), true);
-        if ( json_last_error() !== JSON_ERROR_NONE ) {
+        if ( $requestBody === null || json_last_error() !== JSON_ERROR_NONE ) {
             HTTPResponses::error(400, self::ERROR_REQUEST_BODY);
         }
         return $requestBody;

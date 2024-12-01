@@ -8,17 +8,32 @@ use PDOException;
 
 class WrkDatabase {
 
+    private static ?WrkDatabase $instance = null;
     private PDO $pdo;
 
-    public function __construct() {
+    private function __construct() {
         try {
             $dbUrl = 'mysql:host=' . $_ENV["DB_HOST"] . ';port=' . $_ENV["DB_PORT"] . ';dbname=' . $_ENV["DB_NAME"];
-            $this->pdo = new PDO($dbUrl, $_ENV["DB_USER"], $_ENV["DB_PASS"], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+            $this->pdo = new PDO($dbUrl, $_ENV["DB_USER"], $_ENV["DB_PASS"], [
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+                PDO::ATTR_PERSISTENT => true
+            ]);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch ( PDOException $ex ) {
+        } catch (PDOException $ex) {
             HTTPResponses::error(500, $ex->getMessage());
         }
     }
+
+    public static function getInstance(): WrkDatabase {
+        if (self::$instance === null) {
+            self::$instance = new WrkDatabase();
+        }
+        return self::$instance;
+    }
+
+    private function __clone() {}
+
+    private function __wakeup() {}
 
     public function select(string $query, array $params = [], bool $fetchAll = false): array|bool {
         $statement = $this->pdo->prepare($query);
@@ -46,5 +61,4 @@ class WrkDatabase {
     public function lastInsertId(): bool|string {
         return $this->pdo->lastInsertId();
     }
-
 }

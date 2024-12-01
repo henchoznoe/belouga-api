@@ -17,6 +17,7 @@ $dotenv->load();
 header('Access-Control-Allow-Origin: ' . $_ENV['HEADERS_CORS_HOST']);
 header('Access-Control-Allow-Headers: ' . $_ENV['HEADERS_CORS_HEADERS']);
 header('Access-Control-Allow-Methods: ' . $_ENV['HEADERS_CORS_HTTP_METHODS']);
+header("Access-Control-Max-Age: 86400");
 header('Content-Type: ' . $_ENV['HEADERS_CONTENT_TYPE']);
 
 date_default_timezone_set('Europe/Zurich');
@@ -37,6 +38,8 @@ if ( isset($_SERVER["REQUEST_METHOD"]) ) {
             $http->DELETE();
             break;
         case "OPTIONS":
+            header("HTTP/1.1 200 OK");
+            http_response_code(204);
             break;
         default:
             HTTPResponses::error(405, "Méthode HTTP non autorisée");

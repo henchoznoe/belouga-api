@@ -11,7 +11,7 @@ class WrkTeams {
     private WrkDatabase $wrkDB;
 
     public function __construct() {
-        $this->wrkDB = new WrkDatabase();
+        $this->wrkDB = WrkDatabase::getInstance();
     }
 
     public function create(array $requestBody): void {
