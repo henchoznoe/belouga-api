@@ -83,11 +83,11 @@ class WrkPlayers {
             }
         }
         $existingPlayerByUsername = $this->checkPlayerExistenceByUsername($username);
-        if ( $existingPlayerByUsername && $existingPlayerByUsername['pk_player'] !== $pkPlayer ) HTTPResponses::error(409, "Un joueur avec ce nom d'utilisateur existe déjà");
+        if ( $existingPlayerByUsername && intval($existingPlayerByUsername['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec ce nom d'utilisateur existe déjà");
         $existingPlayerByDiscord = $this->checkPlayerExistenceByDiscord($discord);
-        if ( $existingPlayerByDiscord && $existingPlayerByDiscord['pk_player'] !== $pkPlayer ) HTTPResponses::error(409, "Un joueur avec ce discord existe déjà");
+        if ( $existingPlayerByDiscord && intval($existingPlayerByDiscord['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec ce discord existe déjà");
         $existingPlayerByTwitch = $this->checkPlayerExistenceByTwitch($twitchUrl);
-        if ( $existingPlayerByTwitch && $existingPlayerByTwitch['pk_player'] !== $pkPlayer ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+        if ( $existingPlayerByTwitch && intval($existingPlayerByTwitch['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
         if ( $pkTeam !== null ) {
             $existingTeam = $this->checkTeamExistence($pkTeam);
             if ( !$existingTeam ) HTTPResponses::error(404, "L'équipe spécifiée n'existe pas");

@@ -37,6 +37,7 @@ class HTTPHandlers {
 
     public function GET(): void {
         if ( isset($_GET[self::ACTION]) ) {
+            $requestParams = $this->checkRequestParams();
             switch ( $_GET[self::ACTION] ) {
                 case "getAdmins":
                     $this->authCtrl->authorize(2);
@@ -45,6 +46,10 @@ class HTTPHandlers {
                 case "getAdminTypes":
                     $this->authCtrl->authorize(2);
                     $this->adminsCtrl->getAdminTypes();
+                    break;
+                case "getAdmin":
+                    $this->authCtrl->authorize(2);
+                    $this->adminsCtrl->getAdmin($requestParams);
                     break;
                 case "getPlayers":
                     $this->authCtrl->authorize(1);

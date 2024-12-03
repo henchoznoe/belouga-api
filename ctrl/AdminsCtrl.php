@@ -20,6 +20,10 @@ class AdminsCtrl {
         $this->wrkAdmins->read();
     }
 
+    public function getAdmin(array $requestParams): void {
+        $this->wrkAdmins->getAdmin($requestParams);
+    }
+
     public function update(array $requestBody): void {
         $this->wrkAdmins->update($requestBody);
     }

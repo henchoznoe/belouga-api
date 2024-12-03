@@ -47,18 +47,34 @@ class WrkAdmins {
         HTTPResponses::success("Liste des administrateurs récupérée", $admins);
     }
 
+    public function getAdmin(array $requestParams): void {
+        if ( !isset($requestParams['pk_admin']) ) {
+            HTTPResponses::error(400, "L'identifiant de l'administrateur doit être spécifié");
+        }
+        $pkAdmin = $requestParams['pk_admin'];
+        $validations = [
+            'pk_admin' => [self::REGEX_ADMINS_PK_ADMIN, "L'identifiant de l'administrateur doit être un nombre entier positif"]
+        ];
+        foreach ( $validations as $field => $validation ) {
+            if ( !preg_match($validation[0], $requestParams[$field]) ) {
+                HTTPResponses::error(400, $validation[1]);
+            }
+        }
+        $admin = $this->getAdminById($pkAdmin);
+        if ( !$admin ) HTTPResponses::error(404, "Aucun administrateur avec cet identifiant n'a été trouvé");
+        HTTPResponses::success("Administrateur récupéré avec succès", $admin);
+    }
+
     public function update(array $requestBody): void {
-        if ( !isset($requestBody['pk_admin']) || !isset($requestBody['username']) || !isset($requestBody['password']) || !isset($requestBody['pk_admin_type']) ) {
-            HTTPResponses::error(400, "L'identifiant de l'administrateur, le nom d'utilisateur, le mot de passe et le type d'administrateur doivent être spécifiés");
+        if ( !isset($requestBody['pk_admin']) || !isset($requestBody['username']) || !isset($requestBody['pk_admin_type']) ) {
+            HTTPResponses::error(400, "L'identifiant de l'administrateur, le nom d'utilisateur et le type d'administrateur doivent être spécifiés");
         }
         $pkAdmin = $requestBody['pk_admin'];
         $username = $requestBody['username'];
-        $password = $requestBody['password'];
         $pkAdminType = $requestBody['pk_admin_type'];
         $validations = [
             'pk_admin' => [self::REGEX_ADMINS_PK_ADMIN, "L'identifiant de l'administrateur doit être un nombre entier positif"],
             'username' => [self::REGEX_ADMINS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
-            'password' => [self::REGEX_ADMINS_PASSWORD, "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, et avoir une longueur comprise entre 8 et 20 caractères"],
             'pk_admin_type' => [self::REGEX_ADMINS_PK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"]
         ];
         foreach ( $validations as $field => $validation ) {
@@ -69,11 +85,10 @@ class WrkAdmins {
         $existingAdmin = $this->getAdminById($pkAdmin);
         if ( !$existingAdmin ) HTTPResponses::error(404, "Aucun administrateur avec cet identifiant n'a été trouvé");
         $existingAdmin = $this->checkAdminExistence($username);
-        if ( $existingAdmin && $existingAdmin['pk_admin'] !== $pkAdmin ) HTTPResponses::error(409, "Un administrateur avec ce nom d'utilisateur existe déjà");
+        if ( $existingAdmin && intval($existingAdmin['pk_admin']) !== intval($pkAdmin) ) HTTPResponses::error(409, "Un administrateur avec ce nom d'utilisateur existe déjà");
         $existingAdminType = $this->checkAdminTypeExistence($pkAdminType);
         if ( !$existingAdminType ) HTTPResponses::error(404, "Aucun type d'administrateur avec cet identifiant n'a été trouvé");
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $this->wrkDB->execute(UPDATE_ADMIN, [$username, $hashedPassword, $pkAdminType, $pkAdmin]);
+        $this->wrkDB->execute(UPDATE_ADMIN, [$username, $pkAdminType, $pkAdmin]);
         $updatedAdmin = $this->getAdminById($pkAdmin);
         HTTPResponses::success("Administrateur mis à jour avec succès", $updatedAdmin);
     }

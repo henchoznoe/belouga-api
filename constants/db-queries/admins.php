@@ -53,7 +53,6 @@ const UPDATE_ADMIN = <<<SQL
     UPDATE Admins
     SET 
         username = ?,
-        password = ?,
         fk_admin_type = ?
     WHERE 
         pk_admin = ?;
