@@ -32,7 +32,8 @@ class WrkPlayers {
             'pk_team' => [self::REGEX_PLAYERS_PK_TEAM, "Le pk_team ne respecte pas le bon format"]
         ];
         foreach ( $validations as $field => $validation ) {
-            if ( !preg_match($validation[0], $requestBody[$field]) ) {
+            $value = $requestBody[$field] ?? null;
+            if ( !preg_match($validation[0], $value) ) {
                 if ( $field === 'twitch_url' && $twitchUrl === null ) continue;
                 if ( $field === 'pk_team' && $pkTeam === null ) continue;
                 HTTPResponses::error(400, $validation[1]);
@@ -42,8 +43,10 @@ class WrkPlayers {
         if ( $existingPlayerByUsername ) HTTPResponses::error(409, "Un joueur avec ce nom d'utilisateur existe déjà");
         $existingPlayerByDiscord = $this->checkPlayerExistenceByDiscord($discord);
         if ( $existingPlayerByDiscord ) HTTPResponses::error(409, "Un joueur avec ce discord existe déjà");
-        $existingPlayerByTwitch = $this->checkPlayerExistenceByTwitch($twitchUrl);
-        if ( $existingPlayerByTwitch ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+        if ( $twitchUrl !== null ) {
+            $existingPlayerByTwitch = $this->checkPlayerExistenceByTwitch($twitchUrl);
+            if ( $existingPlayerByTwitch ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+        }
         if ( $pkTeam !== null ) {
             $existingTeam = $this->checkTeamExistence($pkTeam);
             if ( !$existingTeam ) HTTPResponses::error(404, "L'équipe spécifiée n'existe pas");
