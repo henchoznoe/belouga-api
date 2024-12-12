@@ -3,7 +3,9 @@
 const GET_TEAMS = <<<SQL
     SELECT
         pk_team,
-        name
+        name,
+        size,
+        (SELECT COUNT(*) FROM Players WHERE fk_team = pk_team) AS player_count
     FROM
         Teams;
 SQL;
@@ -11,7 +13,9 @@ SQL;
 const GET_TEAM_BY_NAME = <<<SQL
     SELECT
         pk_team,
-        name
+        name,
+        size,
+        (SELECT COUNT(*) FROM Players WHERE fk_team = pk_team) AS player_count
     FROM
         Teams
     WHERE
@@ -20,16 +24,17 @@ SQL;
 
 const INSERT_TEAM = <<<SQL
     INSERT INTO
-        Teams (name)
+        Teams (name, size)
     VALUES
-        (?);
+        (?, ?);
 SQL;
 
 const UPDATE_TEAM = <<<SQL
     UPDATE
         Teams
     SET
-        name = ?
+        name = ?,
+        size = ?
     WHERE
         pk_team = ?;
 SQL;

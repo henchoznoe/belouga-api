@@ -20,6 +20,10 @@ class PlayersCtrl {
         $this->wrkPlayers->read();
     }
 
+    public function getPlayer(array $requestParams): void {
+        $this->wrkPlayers->getPlayer($requestParams);
+    }
+
     public function update(array $requestBody): void {
         $this->wrkPlayers->update($requestBody);
     }

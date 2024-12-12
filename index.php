@@ -11,17 +11,19 @@ require_once ROOT . "/http/index.php";
 require_once ROOT . "/wrk/index.php";
 require_once ROOT . "/constants/db-queries/index.php";
 
-$dotenv = Dotenv::createImmutable(ROOT);
-$dotenv->load();
+// Load environment variables
+Dotenv::createImmutable(ROOT)->load();
 
+// Set headers
 header('Access-Control-Allow-Origin: ' . $_ENV['HEADERS_CORS_HOST']);
 header('Access-Control-Allow-Headers: ' . $_ENV['HEADERS_CORS_HEADERS']);
 header('Access-Control-Allow-Methods: ' . $_ENV['HEADERS_CORS_HTTP_METHODS']);
-header("Access-Control-Max-Age: 86400");
+header('Access-Control-Max-Age:' . $_ENV['HEADERS_CORS_MAX_AGE']);
 header('Content-Type: ' . $_ENV['HEADERS_CONTENT_TYPE']);
 
 date_default_timezone_set('Europe/Zurich');
 
+// Handle HTTP requests
 if ( isset($_SERVER["REQUEST_METHOD"]) ) {
     $http = new HTTPHandlers();
     switch ( $_SERVER["REQUEST_METHOD"] ) {

@@ -4,7 +4,7 @@ const GET_ADMINS = <<<SQL
     SELECT 
         a.pk_admin, 
         a.username, 
-        at.pk_admin_type,
+        a.fk_admin_type,
         at.label
     FROM 
         Admins a
@@ -21,7 +21,7 @@ const GET_ADMIN_BY_PK = <<<SQL
     SELECT 
         a.pk_admin, 
         a.username, 
-        at.pk_admin_type,
+        a.fk_admin_type,
         at.label
     FROM 
         Admins a
@@ -47,15 +47,6 @@ const GET_ADMIN_TYPE_BY_PK = <<<SQL
         AdminTypes
     WHERE 
         pk_admin_type = ?;
-SQL;
-
-const UPDATE_ADMIN = <<<SQL
-    UPDATE Admins
-    SET 
-        username = ?,
-        fk_admin_type = ?
-    WHERE 
-        pk_admin = ?;
 SQL;
 
 const DELETE_ADMIN = <<<SQL

@@ -8,7 +8,7 @@ class WrkPlayers {
 
     private const REGEX_PLAYERS_USERNAME = '/^[\p{L}\p{N}\p{Pd}\p{Pc}\p{Zs}\'"?!.,;:@&()\/+-]{1,32}$/u';
     private const REGEX_PLAYERS_DISCORD = '/^[\p{L}\p{N}\p{Pd}\p{Pc}\p{Zs}\'"?!.,;:@&()\/+-]{1,32}$/u';
-    private const REGEX_PLAYERS_TWITCHURL = '/^https:\/\/(www\.)?twitch\.tv\/[a-zA-Z0-9_]{1,25}$/';
+    private const REGEX_PLAYERS_TWITCH = '/^https:\/\/(www\.)?twitch\.tv\/[a-zA-Z0-9_]{1,25}$/';
     private const REGEX_PLAYERS_PK_TEAM = "/^\d+$/";
 
     private WrkDatabase $wrkDB;
@@ -28,7 +28,7 @@ class WrkPlayers {
         $validations = [
             'username' => [self::REGEX_PLAYERS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
             'discord' => [self::REGEX_PLAYERS_DISCORD, "Le discord ne respecte pas le bon format"],
-            'twitch_url' => [self::REGEX_PLAYERS_TWITCHURL, "Le twitch_url ne respecte pas le bon format"],
+            'twitch_url' => [self::REGEX_PLAYERS_TWITCH, "Le twitch_url ne respecte pas le bon format"],
             'pk_team' => [self::REGEX_PLAYERS_PK_TEAM, "Le pk_team ne respecte pas le bon format"]
         ];
         foreach ( $validations as $field => $validation ) {
@@ -61,6 +61,16 @@ class WrkPlayers {
         HTTPResponses::success("Liste des joueurs récupérée", $players);
     }
 
+    public function getPlayer(array $requestParams): void {
+        if ( !isset($requestParams['pk_player']) ) {
+            HTTPResponses::error(400, "L'identifiant du joueur doit être spécifié");
+        }
+        $pkPlayer = $requestParams['pk_player'];
+        $player = $this->getPlayerById($pkPlayer);
+        if ( !$player ) HTTPResponses::error(404, "Le joueur spécifié n'existe pas");
+        HTTPResponses::success("Joueur récupéré avec succès", $player);
+    }
+
     public function update(array $requestBody): void {
         if ( !isset($requestBody['pk_player']) ) {
             HTTPResponses::error(400, "L'identifiant du joueur doit être spécifié");
@@ -70,18 +80,18 @@ class WrkPlayers {
         if ( !$player ) HTTPResponses::error(404, "Le joueur spécifié n'existe pas");
         $username = $requestBody['username'] ?? $player['username'];
         $discord = $requestBody['discord'] ?? $player['discord'];
-        $twitchUrl = $requestBody['twitch_url'] ?? $player['twitch'];
-        $pkTeam = $requestBody['pk_team'] ?? $player['pk_team'];
+        $twitchUrl = $requestBody['twitch'] ?? null;
+        $pkTeam = $requestBody['pk_team'] ?? null;
         $validations = [
             'username' => [self::REGEX_PLAYERS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
             'discord' => [self::REGEX_PLAYERS_DISCORD, "Le discord ne respecte pas le bon format"],
-            'twitch_url' => [self::REGEX_PLAYERS_TWITCHURL, "Le twitch_url ne respecte pas le bon format"],
+            'twitch' => [self::REGEX_PLAYERS_TWITCH, "Le twitch_url ne respecte pas le bon format"],
             'pk_team' => [self::REGEX_PLAYERS_PK_TEAM, "Le pk_team ne respecte pas le bon format"]
         ];
         foreach ( $validations as $field => $validation ) {
             if ( !preg_match($validation[0], $requestBody[$field]) ) {
-                if ( $field === 'twitch_url' && $twitchUrl === $player['twitch'] ) continue;
-                if ( $field === 'pk_team' && $pkTeam === $player['pk_team'] ) continue;
+                if ( $field === 'twitch' && $twitchUrl === null ) continue;
+                if ( $field === 'pk_team' && $pkTeam === null ) continue;
                 HTTPResponses::error(400, $validation[1]);
             }
         }
@@ -89,8 +99,10 @@ class WrkPlayers {
         if ( $existingPlayerByUsername && intval($existingPlayerByUsername['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec ce nom d'utilisateur existe déjà");
         $existingPlayerByDiscord = $this->checkPlayerExistenceByDiscord($discord);
         if ( $existingPlayerByDiscord && intval($existingPlayerByDiscord['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec ce discord existe déjà");
-        $existingPlayerByTwitch = $this->checkPlayerExistenceByTwitch($twitchUrl);
-        if ( $existingPlayerByTwitch && intval($existingPlayerByTwitch['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+        if ( $twitchUrl !== null ) {
+            $existingPlayerByTwitch = $this->checkPlayerExistenceByTwitch($twitchUrl);
+            if ( $existingPlayerByTwitch && intval($existingPlayerByTwitch['pk_player']) !== intval($pkPlayer) ) HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+        }
         if ( $pkTeam !== null ) {
             $existingTeam = $this->checkTeamExistence($pkTeam);
             if ( !$existingTeam ) HTTPResponses::error(404, "L'équipe spécifiée n'existe pas");

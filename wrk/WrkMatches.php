@@ -17,12 +17,21 @@ class WrkMatches {
         $this->wrkDB = WrkDatabase::getInstance();
     }
 
-    public function create() {
+    public function create(array $requestBody) {
+        HTTPResponses::error(501, "Non implémenté");
     }
 
     public function read(): void {
         $matches = $this->wrkDB->select(GET_MATCHES, [], true);
         HTTPResponses::success("Liste des matchs récupérée", $matches);
+    }
+
+    public function update(array $requestBody): void {
+        HTTPResponses::error(501, "Non implémenté");
+    }
+
+    public function delete(array $requestParams): void {
+        HTTPResponses::error(501, "Non implémenté");
     }
 
 }

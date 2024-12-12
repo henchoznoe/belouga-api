@@ -87,7 +87,9 @@ SQL;
 const GET_TEAM_BY_PK = <<<SQL
     SELECT 
         pk_team,
-        name
+        name,
+        size,
+        (SELECT COUNT(*) FROM Players WHERE fk_team = pk_team) AS player_count
     FROM
         Teams
     WHERE

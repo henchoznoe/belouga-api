@@ -11,6 +11,12 @@ use Ctrl\MatchesCtrl;
 
 require_once ROOT . "/ctrl/index.php";
 
+/**
+ * Class HTTPHandlers
+ * @package HTTP
+ * @author Noé Henchoz
+ * @date 2024-12
+ */
 class HTTPHandlers {
 
     private const ACTION = "action";
@@ -54,6 +60,10 @@ class HTTPHandlers {
                 case "getPlayers":
                     $this->authCtrl->authorize(1);
                     $this->playersCtrl->read();
+                    break;
+                case "getPlayer":
+                    $this->authCtrl->authorize(1);
+                    $this->playersCtrl->getPlayer($requestParams);
                     break;
                 case "getTeams":
                     $this->authCtrl->authorize(1);
@@ -164,6 +174,10 @@ class HTTPHandlers {
         }
     }
 
+    /**
+     * Check the request parameters and return them as an array
+     * @return array request parameters
+     */
     private function checkRequestParams(): array {
         $requestParams = array();
         foreach ( $_GET as $key => $value ) {
@@ -172,6 +186,10 @@ class HTTPHandlers {
         return $requestParams;
     }
 
+    /**
+     * Check the request body and return it as an array
+     * @return array|null request body
+     */
     private function checkRequestBody(): ?array {
         $requestBody = json_decode(file_get_contents("php://input"), true);
         if ( $requestBody === null || json_last_error() !== JSON_ERROR_NONE ) {

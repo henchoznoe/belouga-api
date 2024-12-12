@@ -19,31 +19,45 @@ class WrkDatabase {
                 PDO::ATTR_PERSISTENT => true
             ]);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $ex) {
+        } catch ( PDOException $ex ) {
             HTTPResponses::error(500, $ex->getMessage());
         }
     }
 
     public static function getInstance(): WrkDatabase {
-        if (self::$instance === null) {
+        if ( self::$instance === null ) {
             self::$instance = new WrkDatabase();
         }
         return self::$instance;
     }
 
-    private function __clone() {}
+    private function __clone() {
+    }
 
-    private function __wakeup() {}
+    public function __wakeup() {
+    }
 
     public function select(string $query, array $params = [], bool $fetchAll = false): array|bool {
-        $statement = $this->pdo->prepare($query);
-        $statement->execute($params);
-        return $fetchAll ? $statement->fetchAll(PDO::FETCH_ASSOC) : $statement->fetch(PDO::FETCH_ASSOC);
+        try {
+            $statement = $this->pdo->prepare($query);
+            $statement->execute($params);
+            return $fetchAll ? $statement->fetchAll(PDO::FETCH_ASSOC) : $statement->fetch(PDO::FETCH_ASSOC);
+        } catch ( PDOException $ex ) {
+            HTTPResponses::error(500, $ex->getMessage());
+            // Never reached
+            return false;
+        }
     }
 
     public function execute(string $query, array $params = []): bool {
-        $stmt = $this->pdo->prepare($query);
-        return $stmt->execute($params);
+        try {
+            $statement = $this->pdo->prepare($query);
+            return $statement->execute($params);
+        } catch ( PDOException $ex ) {
+            HTTPResponses::error(500, $ex->getMessage());
+            // Never reached
+            return false;
+        }
     }
 
     public function beginTransaction(): void {
