@@ -7,6 +7,12 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use HTTP\HTTPResponses;
 
+/**
+ * Class WrkAuth
+ * @package Wrk
+ * @author Noé Henchoz
+ * @date 2024-12
+ */
 class WrkAuth {
 
     private const REGEX_LOGIN_USERNAME = "/^[a-zA-Z0-9._-]{1,32}$/";
@@ -18,6 +24,11 @@ class WrkAuth {
         $this->wrkDB = WrkDatabase::getInstance();
     }
 
+    /**
+     * Authenticate an admin
+     * @param array $requestBody The request body
+     * @return void nothing is returned
+     */
     public function login(array $requestBody): void {
         if ( !isset($requestBody['username']) || !isset($requestBody['password']) ) {
             HTTPResponses::error(400, "Le nom d'utilisateur et le mot de passe doivent être spécifiés");
@@ -33,9 +44,9 @@ class WrkAuth {
                 HTTPResponses::error(400, $validation[1]);
             }
         }
-        $existingAdmin = $this->checkAdminExistence($username);
+        $existingAdmin = $this->getAdminByUsername($username);
         if ( !$existingAdmin || !password_verify($password, $existingAdmin['password']) ) {
-            HTTPResponses::error(403, "Les identifiants d'authentification sont invalides");
+            HTTPResponses::error(403, "Identifiants invalides");
         }
         $payload = [
             'iss' => $_ENV["JWT_ISSUER"],
@@ -53,10 +64,20 @@ class WrkAuth {
         HTTPResponses::success("Connexion réussie", $data);
     }
 
-    private function checkAdminExistence(string $username): array|bool {
+    /**
+     * Get an admin by username
+     * @param string $username The username
+     * @return array|bool The admin if found, false otherwise
+     */
+    private function getAdminByUsername(string $username): array|bool {
         return $this->wrkDB->select(GET_ADMIN_BY_USERNAME, [$username]);
     }
 
+    /**
+     * Authorize an admin to access a specific resource
+     * @param int $requiredLevel The permission required to access the resource
+     * @return void nothing is returned
+     */
     public function authorize(int $requiredLevel): void {
         $headers = apache_request_headers();
         if ( isset($headers['Authorization']) ) {
@@ -79,5 +100,6 @@ class WrkAuth {
             HTTPResponses::error(401, "Token non fourni");
         }
     }
+
 
 }

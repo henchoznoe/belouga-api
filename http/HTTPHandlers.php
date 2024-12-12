@@ -46,27 +46,27 @@ class HTTPHandlers {
             $requestParams = $this->checkRequestParams();
             switch ( $_GET[self::ACTION] ) {
                 case "getAdmins":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->read();
                     break;
                 case "getAdminTypes":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->getAdminTypes();
                     break;
                 case "getAdmin":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->getAdmin($requestParams);
                     break;
                 case "getPlayers":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->playersCtrl->read();
                     break;
                 case "getPlayer":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->playersCtrl->getPlayer($requestParams);
                     break;
                 case "getTeams":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->read();
                     break;
                 case "getRounds":
@@ -92,19 +92,19 @@ class HTTPHandlers {
                     $this->authCtrl->login($requestBody);
                     break;
                 case "createAdmin":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->create($requestBody);
                     break;
                 case "createPlayer":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->playersCtrl->create($requestBody);
                     break;
                 case "createTeam":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->create($requestBody);
                     break;
                 case "createMatch":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->matchesCtrl->create($requestBody);
                     break;
                 default:
@@ -121,19 +121,19 @@ class HTTPHandlers {
         if ( isset($requestBody[self::ACTION]) ) {
             switch ( $requestBody[self::ACTION] ) {
                 case "updateAdmin":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->update($requestBody);
                     break;
                 case "updatePlayer":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->playersCtrl->update($requestBody);
                     break;
                 case "updateTeam":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->update($requestBody);
                     break;
                 case "updateMatch":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->matchesCtrl->update($requestBody);
                     break;
                 default:
@@ -150,19 +150,19 @@ class HTTPHandlers {
             $requestParams = $this->checkRequestParams();
             switch ( $_GET[self::ACTION] ) {
                 case "deleteAdmin":
-                    $this->authCtrl->authorize(2);
+                    $this->authCtrl->authorize(ROLES::SUPER_ADMIN->value);
                     $this->adminsCtrl->delete($requestParams);
                     break;
                 case "deletePlayer":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->playersCtrl->delete($requestParams);
                     break;
                 case "deleteTeam":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->delete($requestParams);
                     break;
                 case "deleteMatch":
-                    $this->authCtrl->authorize(1);
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->matchesCtrl->delete($requestParams);
                     break;
                 default:
@@ -198,4 +198,9 @@ class HTTPHandlers {
         return $requestBody;
     }
 
+}
+
+enum ROLES: int {
+    case SUPER_ADMIN = 2;
+    case ADMIN = 1;
 }
