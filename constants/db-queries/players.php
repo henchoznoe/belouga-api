@@ -4,9 +4,11 @@ const GET_PLAYERS = <<<SQL
     SELECT 
         p.pk_player, 
         p.username, 
+        p.riot_username,
         p.discord,
         p.twitch,
-        t.pk_team,
+        p.`rank`,
+        p.fk_team,
         t.name AS team_name
     FROM
         Players p
@@ -15,17 +17,37 @@ const GET_PLAYERS = <<<SQL
 SQL;
 
 const INSERT_PLAYER = <<<SQL
-    INSERT INTO Players (username, discord, twitch, fk_team)
-    VALUES (?, ?, ?, ?);
+    INSERT INTO Players (username, riot_username, discord, twitch, `rank`, fk_team)
+    VALUES (?, ?, ?, ?, ?, ?);
+SQL;
+
+const GET_PLAYER_BY_PK = <<<SQL
+    SELECT 
+        p.pk_player, 
+        p.username, 
+        p.riot_username,
+        p.discord,
+        p.twitch,
+        p.`rank`,
+        p.fk_team,
+        t.name AS team_name
+    FROM
+        Players p
+    LEFT JOIN
+        Teams t ON p.fk_team = t.pk_team
+    WHERE
+        p.pk_player = ?;
 SQL;
 
 const GET_PLAYER_BY_USERNAME = <<<SQL
     SELECT 
         p.pk_player, 
         p.username, 
+        p.riot_username,
         p.discord,
         p.twitch,
-        t.pk_team,
+        p.`rank`,
+        p.fk_team,
         t.name AS team_name
     FROM
         Players p
@@ -39,9 +61,11 @@ const GET_PLAYER_BY_DISCORD = <<<SQL
     SELECT 
         p.pk_player, 
         p.username, 
+        p.riot_username,
         p.discord,
         p.twitch,
-        t.pk_team,
+        p.`rank`,
+        p.fk_team,
         t.name AS team_name
     FROM
         Players p
@@ -53,11 +77,13 @@ SQL;
 
 const GET_PLAYER_BY_TWITCH = <<<SQL
     SELECT 
-        p.pk_player, 
+       p.pk_player, 
         p.username, 
+        p.riot_username,
         p.discord,
         p.twitch,
-        t.pk_team,
+        p.`rank`,
+        p.fk_team,
         t.name AS team_name
     FROM
         Players p
@@ -67,15 +93,22 @@ const GET_PLAYER_BY_TWITCH = <<<SQL
         twitch = ?;
 SQL;
 
-const UPDATE_PLAYER = <<<SQL
-    UPDATE Players
-    SET 
-        username = ?,
-        discord = ?,
-        twitch = ?,
-        fk_team = ?
-    WHERE 
-        pk_player = ?;
+const GET_PLAYER_BY_RIOT_USERNAME = <<<SQL
+    SELECT 
+        p.pk_player, 
+        p.username, 
+        p.riot_username,
+        p.discord,
+        p.twitch,
+        p.`rank`,
+        p.fk_team,
+        t.name AS team_name
+    FROM
+        Players p
+    LEFT JOIN
+        Teams t ON p.fk_team = t.pk_team
+    WHERE
+        riot_username = ?;
 SQL;
 
 const DELETE_PLAYER = <<<SQL
@@ -84,18 +117,4 @@ const DELETE_PLAYER = <<<SQL
         pk_player = ?;
 SQL;
 
-const GET_PLAYER_BY_PK = <<<SQL
-    SELECT 
-        p.pk_player, 
-        p.username, 
-        p.discord,
-        p.twitch,
-        t.pk_team,
-        t.name AS team_name
-    FROM
-        Players p
-    LEFT JOIN
-        Teams t ON p.fk_team = t.pk_team
-    WHERE
-        p.pk_player = ?;
-SQL;
+

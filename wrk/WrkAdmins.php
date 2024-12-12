@@ -15,7 +15,7 @@ class WrkAdmins {
     private const REGEX_ADMINS_PK_ADMIN = "/^\d+$/";
     private const REGEX_ADMINS_USERNAME = "/^[a-zA-Z0-9._-]{1,32}$/";
     private const REGEX_ADMINS_PASSWORD = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/";
-    private const REGEX_ADMINS_PK_ADMIN_TYPE = "/^[1-2]$/";
+    private const REGEX_ADMINS_FK_ADMIN_TYPE = "/^[1-2]$/";
 
     private WrkDatabase $wrkDB;
 
@@ -88,7 +88,7 @@ class WrkAdmins {
         $validations = [
             'username' => [self::REGEX_ADMINS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
             'password' => [self::REGEX_ADMINS_PASSWORD, "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, et avoir une longueur comprise entre 8 et 20 caractères"],
-            'pk_admin_type' => [self::REGEX_ADMINS_PK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"]
+            'pk_admin_type' => [self::REGEX_ADMINS_FK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"]
         ];
         foreach ( $validations as $field => $validation ) {
             if ( !preg_match($validation[0], $requestBody[$field]) ) {
@@ -135,7 +135,7 @@ class WrkAdmins {
         // Validate the fields
         $fields = [
             'username' => [self::REGEX_ADMINS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
-            'fk_admin_type' => [self::REGEX_ADMINS_PK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"],
+            'fk_admin_type' => [self::REGEX_ADMINS_FK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"],
             'password' => [self::REGEX_ADMINS_PASSWORD, "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, et avoir une longueur comprise entre 8 et 20 caractères"],
         ];
         // Prepare the fields to be updated
