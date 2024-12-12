@@ -20,7 +20,6 @@ require_once ROOT . "/ctrl/index.php";
 class HTTPHandlers {
 
     private const ACTION = "action";
-
     private const UNSPECIFIED_ACTION = "The action is not specified";
     private const UNKNOWN_ACTION = "Unknown action";
     private const ERROR_REQUEST_BODY = "Error in the request body";
@@ -69,6 +68,10 @@ class HTTPHandlers {
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->read();
                     break;
+                case "getTeam":
+                    $this->authCtrl->authorize(ROLES::ADMIN->value);
+                    $this->teamsCtrl->getTeam($requestParams);
+                    break;
                 case "getRounds":
                     $this->roundsCtrl->read();
                     break;
@@ -116,7 +119,7 @@ class HTTPHandlers {
         }
     }
 
-    public function PUT(): void {
+    public function PATCH(): void {
         $requestBody = $this->checkRequestBody();
         if ( isset($requestBody[self::ACTION]) ) {
             switch ( $requestBody[self::ACTION] ) {

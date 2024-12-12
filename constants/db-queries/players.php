@@ -84,18 +84,6 @@ const DELETE_PLAYER = <<<SQL
         pk_player = ?;
 SQL;
 
-const GET_TEAM_BY_PK = <<<SQL
-    SELECT 
-        pk_team,
-        name,
-        size,
-        (SELECT COUNT(*) FROM Players WHERE fk_team = pk_team) AS player_count
-    FROM
-        Teams
-    WHERE
-        pk_team = ?;
-SQL;
-
 const GET_PLAYER_BY_PK = <<<SQL
     SELECT 
         p.pk_player, 

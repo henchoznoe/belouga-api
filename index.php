@@ -33,8 +33,8 @@ if ( isset($_SERVER["REQUEST_METHOD"]) ) {
         case "POST":
             $http->POST();
             break;
-        case "PUT":
-            $http->PUT();
+        case "PATCH":
+            $http->PATCH();
             break;
         case "DELETE":
             $http->DELETE();

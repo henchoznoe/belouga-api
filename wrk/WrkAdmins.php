@@ -12,10 +12,10 @@ use HTTP\HTTPResponses;
  */
 class WrkAdmins {
 
+    private const REGEX_ADMINS_PK_ADMIN = "/^\d+$/";
     private const REGEX_ADMINS_USERNAME = "/^[a-zA-Z0-9._-]{1,32}$/";
     private const REGEX_ADMINS_PASSWORD = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/";
     private const REGEX_ADMINS_PK_ADMIN_TYPE = "/^[1-2]$/";
-    private const REGEX_ADMINS_PK_ADMIN = "/^\d+$/";
 
     private WrkDatabase $wrkDB;
 
@@ -181,7 +181,7 @@ class WrkAdmins {
         }
         // Check if there are fields to update
         if ( empty($updates) ) {
-            HTTPResponses::error(400, "Aucun champ valide fourni pour la mise à jour");
+            HTTPResponses::error(400, "Aucun champ à mettre à jour n'a été spécifié");
         }
         // Add the id of the admin to update
         $params[] = $pkAdmin;
@@ -239,7 +239,7 @@ class WrkAdmins {
     }
 
     /**
-     * Check if an admin exists by its username
+     * Get an admin by its username
      * @param string $username The username of the admin
      * @return array|bool the admin if it exists, false otherwise
      */
@@ -248,7 +248,7 @@ class WrkAdmins {
     }
 
     /**
-     * Check if an admin type exists by its id
+     * Get an admin type by its id
      * @param int $pkAdminType The id of the admin type
      * @return array|bool the admin type if it exists, false otherwise
      */
