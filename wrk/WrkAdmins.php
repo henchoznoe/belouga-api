@@ -78,17 +78,17 @@ class WrkAdmins {
      */
     public function create(array $requestBody): void {
         // Check if the required fields are set
-        if ( !isset($requestBody['username']) || !isset($requestBody['password']) || !isset($requestBody['pk_admin_type']) ) {
+        if ( !isset($requestBody['username']) || !isset($requestBody['password']) || !isset($requestBody['fk_admin_type']) ) {
             HTTPResponses::error(400, "Le nom d'utilisateur, le mot de passe et le type d'administrateur doivent être spécifiés");
         }
         // Validate the fields
         $username = $requestBody['username'];
         $password = $requestBody['password'];
-        $pkAdminType = $requestBody['pk_admin_type'];
+        $fkAdminType = $requestBody['fk_admin_type'];
         $validations = [
             'username' => [self::REGEX_ADMINS_USERNAME, "Le nom d'utilisateur ne respecte pas le bon format"],
             'password' => [self::REGEX_ADMINS_PASSWORD, "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, et avoir une longueur comprise entre 8 et 20 caractères"],
-            'pk_admin_type' => [self::REGEX_ADMINS_FK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"]
+            'fk_admin_type' => [self::REGEX_ADMINS_FK_ADMIN_TYPE, "Le type d'administrateur doit être soit 1 (Admin) soit 2 (SuperAdmin)"]
         ];
         foreach ( $validations as $field => $validation ) {
             if ( !preg_match($validation[0], $requestBody[$field]) ) {
@@ -100,13 +100,13 @@ class WrkAdmins {
             HTTPResponses::error(409, "Un administrateur avec ce nom d'utilisateur existe déjà");
         }
         // Check if the admin type exists
-        if ( !$this->getAdminTypeById($pkAdminType) ) {
+        if ( !$this->getAdminTypeById($fkAdminType) ) {
             HTTPResponses::error(404, "Ce type d'administrateur n'existe pas");
         }
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         // Insert the admin into the database
-        $this->wrkDB->execute(INSERT_ADMIN, [$username, $hashedPassword, $pkAdminType]);
+        $this->wrkDB->execute(INSERT_ADMIN, [$username, $hashedPassword, $fkAdminType]);
         // Get the added admin and send it as a response
         $addedAdmin = $this->getAdminById($this->wrkDB->lastInsertId());
         HTTPResponses::success("Administrateur créé avec succès", $addedAdmin);
