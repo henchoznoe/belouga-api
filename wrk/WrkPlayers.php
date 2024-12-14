@@ -236,8 +236,7 @@ class WrkPlayers {
      * @param array $requestParams the request parameters
      * @return void nothing to return
      */
-    public
-    function delete(array $requestParams): void {
+    public function delete(array $requestParams): void {
         // Check if the required field is set
         if ( !isset($requestParams['pk_player']) ) {
             HTTPResponses::error(400, "L'identifiant du joueur doit être spécifié pour la suppression");
@@ -269,8 +268,7 @@ class WrkPlayers {
      * @param string $username The id of the player
      * @return array|bool the player if it exists, false otherwise
      */
-    private
-    function getPlayerByUsername(string $username): array|bool {
+    private function getPlayerByUsername(string $username): array|bool {
         return $this->wrkDB->select(GET_PLAYER_BY_USERNAME, [$username]);
     }
 
@@ -279,8 +277,7 @@ class WrkPlayers {
      * @param string $riotUsername The riot username of the player
      * @return array|bool the player if it exists, false otherwise
      */
-    private
-    function getPlayerByRiotUsername(string $riotUsername): array|bool {
+    private function getPlayerByRiotUsername(string $riotUsername): array|bool {
         return $this->wrkDB->select(GET_PLAYER_BY_RIOT_USERNAME, [$riotUsername]);
     }
 
@@ -289,8 +286,7 @@ class WrkPlayers {
      * @param string $discord The discord of the player
      * @return array|bool the player if it exists, false otherwise
      */
-    private
-    function getPlayerByDiscord(string $discord): array|bool {
+    private function getPlayerByDiscord(string $discord): array|bool {
         return $this->wrkDB->select(GET_PLAYER_BY_DISCORD, [$discord]);
     }
 
@@ -299,8 +295,7 @@ class WrkPlayers {
      * @param string $twitchUrl The twitch url of the player
      * @return array|bool the player if it exists, false otherwise
      */
-    private
-    function getPlayerByTwitchUrl(string $twitchUrl): array|bool {
+    private function getPlayerByTwitchUrl(string $twitchUrl): array|bool {
         return $this->wrkDB->select(GET_PLAYER_BY_TWITCH, [$twitchUrl]);
     }
 
@@ -309,8 +304,7 @@ class WrkPlayers {
      * @param int $pkPlayer The id of the player
      * @return array|bool the player if it exists, false otherwise
      */
-    private
-    function getPlayerById(int $pkPlayer): array|bool {
+    private function getPlayerById(int $pkPlayer): array|bool {
         return $this->wrkDB->select(GET_PLAYER_BY_PK, [$pkPlayer]);
     }
 
@@ -319,8 +313,7 @@ class WrkPlayers {
      * @param int $pkTeam The id of the team
      * @return array|bool the team if it exists, false otherwise
      */
-    private
-    function getTeamById(int $pkTeam): array|bool {
+    private function getTeamById(int $pkTeam): array|bool {
         return $this->wrkDB->select(GET_TEAM_BY_PK, [$pkTeam]);
     }
 

@@ -78,6 +78,9 @@ class HTTPHandlers {
                 case "getMatches":
                     $this->matchesCtrl->read();
                     break;
+                case "getMatch":
+                    $this->matchesCtrl->getMatch($requestParams);
+                    break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
                     break;
