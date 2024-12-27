@@ -5,6 +5,7 @@ namespace HTTP;
 use Ctrl\AuthCtrl;
 use Ctrl\AdminsCtrl;
 use Ctrl\PlayersCtrl;
+use Ctrl\RegisterCtrl;
 use Ctrl\TeamsCtrl;
 use Ctrl\RoundsCtrl;
 use Ctrl\MatchesCtrl;
@@ -30,6 +31,7 @@ class HTTPHandlers {
     private TeamsCtrl $teamsCtrl;
     private RoundsCtrl $roundsCtrl;
     private MatchesCtrl $matchesCtrl;
+    private RegisterCtrl $registerCtrl;
 
     public function __construct() {
         $this->authCtrl = new AuthCtrl();
@@ -38,6 +40,7 @@ class HTTPHandlers {
         $this->teamsCtrl = new TeamsCtrl();
         $this->roundsCtrl = new RoundsCtrl();
         $this->matchesCtrl = new MatchesCtrl();
+        $this->registerCtrl = new RegisterCtrl();
     }
 
     public function GET(): void {
@@ -81,6 +84,12 @@ class HTTPHandlers {
                 case "getMatch":
                     $this->matchesCtrl->getMatch($requestParams);
                     break;
+                case "getTeamsWithPlayers":
+                    $this->registerCtrl->getTeamsWithPlayers();
+                    break;
+                case "getTeamWithPlayers":
+                    $this->registerCtrl->getTeamWithPlayers($requestParams);
+                    break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
                     break;
@@ -112,6 +121,12 @@ class HTTPHandlers {
                 case "createMatch":
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->matchesCtrl->create($requestBody);
+                    break;
+                case "registerTeam":
+                    $this->registerCtrl->registerTeam($requestBody);
+                    break;
+                case "registerPlayer":
+                    $this->registerCtrl->registerPlayer($requestBody);
                     break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
