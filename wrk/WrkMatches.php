@@ -2,6 +2,8 @@
 
 namespace Wrk;
 
+use DateTime;
+use Exception;
 use HTTP\HTTPResponses;
 
 /**
@@ -16,7 +18,7 @@ class WrkMatches {
     private const REGEX_MATCHES_FK_TEAMS = "/^\d+$/";
     private const REGEX_MATCHES_FK_ROUNDS = "/^\d+$/";
     private const REGEX_MATCHES_SCORES = "/^\d+$/";
-    private const REGEX_MATCHES_DATE = '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/';
+    private const REGEX_MATCHES_DATE = '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/';
     private const REGEX_MATCHES_FK_WINNER = "/^\d+$/";
 
     private WrkDatabase $wrkDB;
@@ -135,6 +137,15 @@ class WrkMatches {
                 HTTPResponses::error(400, "L'équipe gagnante doit être une des deux équipes");
             }
         }
+        // Check if the match date is set and convert it
+        if ( $matchDate !== null ) {
+            try {
+                $matchDate = new DateTime($matchDate);
+            } catch ( Exception $e ) {
+                HTTPResponses::error(400, "Le match_date doit être une date au format ISO 8601");
+            }
+            $matchDate = $matchDate->format('Y-m-d H:i:s');
+        }
         // Insert the match in the database
         $this->wrkDB->execute(INSERT_MATCH, [$fkTeamOne, $fkTeamTwo, $fkRound, $teamOneScore, $teamTwoScore, $matchDate, $fkWinner]);
         $addedMatch = $this->getMatchById($this->wrkDB->lastInsertId());
@@ -208,11 +219,31 @@ class WrkMatches {
                         if ( !$this->getTeamById($requestBody[$field]) ) {
                             HTTPResponses::error(404, "L'équipe gagnante n'existe pas");
                         }
-                        if ( $requestBody[$field] !== $existingMatch['fk_team_one'] && $requestBody[$field] !== $existingMatch['fk_team_two'] ) {
+                        $teamOne = $requestBody['fk_team_one'] ?? $existingMatch['fk_team_one'];
+                        $teamTwo = $requestBody['fk_team_two'] ?? $existingMatch['fk_team_two'];
+                        $isTeamOneMissing = $teamOne === null;
+                        $isTeamTwoMissing = $teamTwo === null;
+                        if ( ($isTeamOneMissing || $isTeamTwoMissing) &&
+                            !(isset($requestBody['fk_team_one']) && isset($requestBody['fk_team_two'])) ) {
+                            HTTPResponses::error(400, "Impossible de définir un vainqueur si une équipe est manquante");
+                        }
+                        $winnerTeam = intval($requestBody[$field]);
+                        if ( $winnerTeam !== intval($teamOne) && $winnerTeam !== intval($teamTwo) ) {
                             HTTPResponses::error(400, "L'équipe gagnante doit être une des deux équipes");
                         }
+
                         $updates[] = "$field = ?";
                         $params[] = $requestBody[$field];
+                        break;
+                        break;
+                    case 'match_date':
+                        try {
+                            $matchDate = new DateTime($requestBody[$field]);
+                        } catch ( Exception $e ) {
+                            HTTPResponses::error(400, "Le match_date doit être une date au format ISO 8601");
+                        }
+                        $updates[] = "$field = ?";
+                        $params[] = $matchDate->format('Y-m-d H:i:s');
                         break;
                     default:
                         $updates[] = "$field = ?";
