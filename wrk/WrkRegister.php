@@ -13,7 +13,7 @@ use HTTP\HTTPResponses;
 class WrkRegister {
 
     private const REGEX_TEAMS_PK_TEAM = "/^\d+$/";
-    private const REGEX_TEAMS_NAME = "/^[a-zA-Z0-9._-]{1,32}$/";
+    private const REGEX_TEAMS_NAME = "/^[a-zA-Z0-9._ -]{1,32}$/";
     private const REGEX_PLAYERS_USERNAME = "/^[a-zA-Z0-9._-]{1,32}$/";
     private const REGEX_PLAYERS_RIOT_ID = "/^[a-zA-Z0-9._-]{1,32}$/";
     private const REGEX_PLAYERS_DISCORD = "/^[a-zA-Z0-9._-]{1,32}$/";
