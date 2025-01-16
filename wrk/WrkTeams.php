@@ -13,7 +13,7 @@ use HTTP\HTTPResponses;
 class WrkTeams {
 
     private const REGEX_TEAMS_PK_TEAM = "/^\d+$/";
-    private const REGEX_TEAMS_NAME = "/^[a-zA-Z0-9._-]{1,32}$/";
+    private const REGEX_TEAMS_NAME = "/^.{1,32}$/";
     private const REGEX_TEAMS_CAPACITY = "/^\d+$/";
 
     private WrkDatabase $wrkDB;
