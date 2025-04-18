@@ -34,4 +34,8 @@ class RegisterCtrl {
         $this->wrkRegister->registerPlayer($requestBody);
     }
 
+    public function registerPlayerTrackmania(array $requestBody): void {
+        $this->wrkRegister->registerPlayerTrackmania($requestBody);
+    }
+
 }

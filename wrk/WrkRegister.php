@@ -162,6 +162,31 @@ class WrkRegister {
         HTTPResponses::success("Joueur créé avec succès", $addedPlayer);
     }
 
+    public function registerPlayerTrackmania(array $requestBody) {
+    // Check if the required fields are set
+        if ( !isset($requestBody['username']) || !isset($requestBody['discord']) ) {
+            HTTPResponses::error(400, "Le nom d'utilisateur et le discord doivent être spécifiés");
+        }
+        $username = $requestBody['username'];
+        $discord = $requestBody['discord'];
+        $twitchUrl = $requestBody['twitch'] ?? null;
+        // Check if the player already exists
+        if ( $this->getPlayerByUsername($username) ) {
+            HTTPResponses::error(409, "Un joueur avec ce nom d'utilisateur existe déjà");
+        }
+        if ( $this->getPlayerByDiscord($discord) ) {
+            HTTPResponses::error(409, "Un joueur avec ce discord existe déjà");
+        }
+        if ( $twitchUrl !== null ) {
+            if ( $this->getPlayerByTwitchUrl($twitchUrl) ) {
+                HTTPResponses::error(409, "Un joueur avec cet URL Twitch existe déjà");
+            }
+        }
+    $this->wrkDB->execute(INSERT_PLAYER, [$username, null, $discord, $twitchUrl, null, null]);
+    $addedPlayer = $this->getPlayerById($this->wrkDB->lastInsertId());
+    HTTPResponses::success("Joueur créé avec succès", $addedPlayer);
+    }
+
     /**
      * Get a team by its id
      * @param int $pkTeam The id of the team

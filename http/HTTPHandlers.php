@@ -29,8 +29,6 @@ class HTTPHandlers {
     private AdminsCtrl $adminsCtrl;
     private PlayersCtrl $playersCtrl;
     private TeamsCtrl $teamsCtrl;
-    private RoundsCtrl $roundsCtrl;
-    private MatchesCtrl $matchesCtrl;
     private RegisterCtrl $registerCtrl;
 
     public function __construct() {
@@ -38,8 +36,6 @@ class HTTPHandlers {
         $this->adminsCtrl = new AdminsCtrl();
         $this->playersCtrl = new PlayersCtrl();
         $this->teamsCtrl = new TeamsCtrl();
-        $this->roundsCtrl = new RoundsCtrl();
-        $this->matchesCtrl = new MatchesCtrl();
         $this->registerCtrl = new RegisterCtrl();
     }
 
@@ -75,15 +71,6 @@ class HTTPHandlers {
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->getTeam($requestParams);
                     break;
-                case "getRounds":
-                    $this->roundsCtrl->read();
-                    break;
-                case "getMatches":
-                    $this->matchesCtrl->read();
-                    break;
-                case "getMatch":
-                    $this->matchesCtrl->getMatch($requestParams);
-                    break;
                 case "getTeamsWithPlayers":
                     $this->registerCtrl->getTeamsWithPlayers();
                     break;
@@ -118,16 +105,15 @@ class HTTPHandlers {
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->create($requestBody);
                     break;
-                case "createMatch":
-                    $this->authCtrl->authorize(ROLES::ADMIN->value);
-                    $this->matchesCtrl->create($requestBody);
-                    break;
                 case "registerTeam":
                     $this->registerCtrl->registerTeam($requestBody);
                     break;
                 case "registerPlayer":
                     $this->registerCtrl->registerPlayer($requestBody);
                     break;
+                    case "registerPlayerTrackmania":
+                                        $this->registerCtrl->registerPlayerTrackmania($requestBody);
+                                        break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
                     break;
@@ -153,10 +139,6 @@ class HTTPHandlers {
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->update($requestBody);
                     break;
-                case "updateMatch":
-                    $this->authCtrl->authorize(ROLES::ADMIN->value);
-                    $this->matchesCtrl->update($requestBody);
-                    break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
                     break;
@@ -181,10 +163,6 @@ class HTTPHandlers {
                 case "deleteTeam":
                     $this->authCtrl->authorize(ROLES::ADMIN->value);
                     $this->teamsCtrl->delete($requestParams);
-                    break;
-                case "deleteMatch":
-                    $this->authCtrl->authorize(ROLES::ADMIN->value);
-                    $this->matchesCtrl->delete($requestParams);
                     break;
                 default:
                     HTTPResponses::error(400, self::UNKNOWN_ACTION);
